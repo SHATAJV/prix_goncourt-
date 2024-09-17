@@ -15,3 +15,5 @@ class Members:
         else:
             print("Login failed!")
             return False
+    def role (self, role):
+        ...
