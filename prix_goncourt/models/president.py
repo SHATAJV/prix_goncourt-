@@ -5,9 +5,9 @@ class President(Members):
     def __init__(self, name, password):
         super().__init__(name, password)
 
-    def manage_selections(self, selection_stage, books):
+    def manage_selections(self, id_selection, books):
 
-        print(f"Managing selections for stage {selection_stage}:")
+        print(f"Managing selections for stage {id_selection}:")
         for book in books:
             print(f" - {book}")
 
