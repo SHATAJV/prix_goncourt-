@@ -11,3 +11,5 @@ class Book:
         self.publication_date = publication_date
         self.pages = pages
         self.price = price
+def __str__(self):
+    return f"this book {self.title} was wriiten by {self.author} on {self.publication_date}"
