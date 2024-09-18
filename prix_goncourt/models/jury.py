@@ -8,7 +8,10 @@ class Jury(Members):
         super().__init__(name, password)
         self.vote_count = vote_count
 
-    def vote(self, book_title):
-        self.vote_count += 1
-        print(f"{self.name} voted for {book_title}")
-
+    def vote(self, book, votes):
+        if book in votes:
+            votes[book] +=1
+        else:
+            votes[book]= 1
+            self.vote_count +=1
+            print(f"{self.name} is voted for book {book.title}")
