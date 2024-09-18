@@ -1,9 +1,5 @@
-# -*- coding: utf-8 -*-
-
-
-
-# Class Members (Parent class)
-class Members:
+# models/member.py
+class Member:
     def __init__(self, name, password):
         self.name = name
         self.password = password
@@ -15,5 +11,6 @@ class Members:
         else:
             print("Login failed!")
             return False
-    def role (self, role):
-        ...
+
+    def __str__(self):
+        return f"Member: {self.name}"
