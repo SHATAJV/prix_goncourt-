@@ -1,4 +1,3 @@
-# dao/members_dao.py
 from dao.connection import get_db_connection
 
 class MembersDAO:
