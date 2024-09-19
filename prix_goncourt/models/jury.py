@@ -1,10 +1,9 @@
-# models/jury.py
 from models.member import Member
 
 class Jury(Member):
-    def __init__(self, name, password, vote_count=0):
+    def __init__(self, name, password, id_member):
         super().__init__(name, password)
-        self.vote_count = vote_count
+        self.id_member = id_member
 
     def vote(self, book, votes):
         if book in votes:
