@@ -1,9 +1,9 @@
-# models/president.py
 from models.member import Member
 
 class President(Member):
-    def __init__(self, name, password):
+    def __init__(self, name, password, id_member):
         super().__init__(name, password)
+        self.id_member = id_member  # Ajoutez l'initialisation de id_member
 
     def manage_selections(self, selection):
         print(f"Managing selections for tour {selection.selection_number}:")
