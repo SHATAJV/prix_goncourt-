@@ -12,16 +12,14 @@ class MembersDAO:
             cursor.execute(sql, (name,))
             result = cursor.fetchone()  # Utilisez fetchone() pour obtenir une seule ligne
 
-        # Afficher le résultat pour déboguer
-        print(f"DEBUG: Result type: {type(result)}")
-        print(f"DEBUG: Result content: {result}")
+
 
         if result:
             return {
                 'name': result['name'],
                 'password': result['password'],
                 'role': result['role'],
-                'id_member': result['id_member']  # Utilisez les noms des colonnes pour accéder aux valeurs
+                'id_member': result['id_member']
             }
         else:
             return None
