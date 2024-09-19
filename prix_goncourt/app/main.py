@@ -1,8 +1,10 @@
-from models.member import Member
-from models.jury import Jury
-from models.president import President
 from dao.book_dao import BookDAO
 from dao.members_dao import MembersDAO
+from models.jury import Jury
+from models.president import President
+from models.member import Member
+from selection_process import handle_selection_process
+
 
 def display_menu():
     print("=== Menu Principal ===")
@@ -36,7 +38,7 @@ def display_president_menu(book_dao, president):
             selection_number = int(input("Numéro de la sélection (2 ou 3): "))
             book_ids = input("Entrez les ID des livres à ajouter (séparés par des virgules): ").split(',')
             book_ids = [int(book_id.strip()) for book_id in book_ids]
-            book_dao.add_books_to_selection(selection_number, book_ids)
+            book_dao.add_books_to_selection(selection_number, book_ids, None)
             print("Livres ajoutés à la sélection.")
         elif choice == '2':
             selection_number = int(input("Numéro de la sélection (2 ou 3): "))
@@ -61,13 +63,23 @@ def display_jury_menu(book_dao, jury):
             books = book_dao.get_books_by_selection(selection_number)
             if books:
                 for book in books:
-                    print(f"{book['title']} by {book['author']} - {book['summary'][:100]}...")
+                    print(f"ID: {book['id_book']}, Title: {book['title']}, Author: {book['author']}")
             else:
                 print("Aucun livre disponible dans cette sélection.")
         elif choice == '2':
-            book_id = int(input("Entrez l'ID du livre pour voter: "))
-            book_dao.add_vote(book_id, jury.id_member)
-            print("Vote ajouté avec succès!")
+            selection_number = int(input("Entrez le numéro de la sélection (1, 2, 3): "))
+            max_votes = book_dao.get_max_votes_for_selection(selection_number)
+            current_votes = book_dao.get_current_votes_for_jury(jury.id_member, selection_number)
+            votes_remaining = max_votes - current_votes
+
+            if votes_remaining <= 0:
+                print("Vous avez atteint le nombre maximum de votes pour cette sélection.")
+            else:
+                print(f"Vous pouvez encore voter pour {votes_remaining} livre(s).")
+                book_ids_input = input("Entrez les ID des livres pour voter (séparés par des virgules): ")
+                book_ids = [int(book_id.strip()) for book_id in book_ids_input.split(',')]
+                book_dao.add_vote(book_ids, jury.id_member, selection_number)
+                print("Votes ajoutés avec succès!")
         elif choice == '3':
             break
         else:
@@ -76,7 +88,7 @@ def display_jury_menu(book_dao, jury):
 def handle_member_choice(choice, book_dao):
     if choice == '1':
         selection_number = int(input("Entrez le numéro de la sélection (1, 2, 3): "))
-        books = book_dao.read_books_by_selection(selection_number)
+        books = book_dao.get_books_by_selection(selection_number)
         if books:
             for book in books:
                 print(f"ID: {book['id_book']}, Titre: {book['title']}, Auteur: {book['author']}")
@@ -119,5 +131,6 @@ def main():
             break
         else:
             print("Option non valide.")
+
 if __name__ == "__main__":
     main()
