@@ -1,8 +1,9 @@
 from models.member import Member
 
 class Jury(Member):
-    def __init__(self, name, password, id_member):
-        super().__init__(name, password)
+    class Jury(Member):
+     def __init__(self, name, password, id_member, role='jury'):
+        super().__init__(name, password, id_member, role)
         self.id_member = id_member
 
     def vote(self, book, votes):

@@ -16,15 +16,21 @@ def handle_login(member, book_dao):
         display_president_menu(book_dao, member)
     elif isinstance(member, Jury):
         display_jury_menu(book_dao, member)
-    elif isinstance(member, Member):
-        display_member_menu(book_dao)
+    elif member.role == 'public':
+        display_member_menu(book_dao, "public")
+    else:
+        print("Rôle inconnu.")
 
-def display_member_menu(book_dao):
-    print("=== Menu Member ===")
+
+
+def display_member_menu(book_dao, member_role):
+    print(f"=== Menu {member_role.capitalize()} ===")
     print("1. Afficher les livres d'une sélection")
     print("2. Quitter")
     choice = input("Choisissez une option: ")
     handle_member_choice(choice, book_dao)
+
+
 
 def display_president_menu(book_dao, president):
     while True:
@@ -102,7 +108,7 @@ def handle_member_choice(choice, book_dao):
 
 def main():
     members_dao = MembersDAO()
-    book_dao = BookDAO()  # Assurez-vous que BookDAO est correctement instancié
+    book_dao = BookDAO()
 
     while True:
         display_menu()
@@ -120,6 +126,9 @@ def main():
                         handle_login(member, book_dao)
                     elif member_data['role'] == 'jury':
                         member = Jury(member_data['name'], member_data['password'], member_data['id_member'])
+                        handle_login(member, book_dao)
+                    elif member_data['role'] == 'public':
+                        member = Member(member_data['name'], member_data['password'], member_data['id_member'])
                         handle_login(member, book_dao)
                     else:
                         print("Rôle inconnu.")
