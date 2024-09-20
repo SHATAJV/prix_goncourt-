@@ -1,39 +1,40 @@
-# -*- coding: utf-8 -*-
-from models.book import Book
-
-
 class Selection:
-    """
-    Represents a selection round for book voting.
-
-    Attributes:
-        selection_number (int): The number of the selection round.
-        books (list): A list of books included in the selection.
-    """
-
     def __init__(self, selection_number):
         """
-        Initializes a Selection instance.
+        Initialize a new selection with a given selection number.
 
         Args:
-            selection_number (int): The number of the selection round.
+            selection_number (int): The number of the selection.
         """
         self.selection_number = selection_number
         self.books = []
+        self.votes = {}
 
     def add_book(self, book):
         """
-        Adds a book to the selection.
+        Add a book to the selection.
 
         Args:
-            book (Book): The book to be added to the selection.
+            book (Book): The book to add to the selection.
         """
         self.books.append(book)
 
     def display_books(self):
         """
-        Displays the selection number and the list of books in the selection.
+        Display the books in the selection.
         """
         print(f"This is selection number {self.selection_number}:")
         for book in self.books:
             print(f" - {book.title}")
+
+    def record_vote(self, book_id):
+        """
+        Record a vote for a specific book by its ID.
+
+        Args:
+            book_id (int): The ID of the book being voted for.
+        """
+        if book_id in self.votes:
+            self.votes[book_id] += 1
+        else:
+            self.votes[book_id] = 1

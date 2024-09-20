@@ -1,4 +1,4 @@
-from dao.book_dao import BookDAO
+from dao.book_dao import BookDAO, display_books_for_selection
 from dao.members_dao import MembersDAO
 from models.jury import Jury
 from models.president import President
@@ -10,9 +10,10 @@ def display_menu():
     """
     Display the main menu options for the application.
     """
-    print("=== Menu Principal ===")
+    print("=== Main Menu ===")
     print("1. Login")
-    print("2. Quitter")
+    print("2. Quit")
+
 
 def handle_login(member, book_dao):
     """
@@ -29,7 +30,8 @@ def handle_login(member, book_dao):
     elif member.role == 'public':
         display_member_menu(book_dao, "public")
     else:
-        print("Rôle inconnu.")
+        print("Unknown role.")
+
 
 def display_member_menu(book_dao, member_role):
     """
@@ -40,10 +42,11 @@ def display_member_menu(book_dao, member_role):
         member_role (str): The role of the member (should be 'public').
     """
     print(f"=== Menu {member_role.capitalize()} ===")
-    print("1. Afficher les livres d'une sélection")
-    print("2. Quitter")
-    choice = input("Choisissez une option: ")
+    print("1. Display books from a selection")
+    print("2. Quit")
+    choice = input("Choose an option: ")
     handle_member_choice(choice, book_dao)
+
 
 def display_president_menu(book_dao, president):
     """
@@ -54,21 +57,21 @@ def display_president_menu(book_dao, president):
         president (President): The president object logged in.
     """
     while True:
-        print(f"=== Menu Président ({president.name}) ===")
-        print("1. Ajouter des livres à la sélection")
-        print("2. Afficher les résultats des votes")
-        print("3. Démarrer le processus de sélection")
-        print("4. Quitter")
-        choice = input("Choisissez une option: ")
+        print(f"=== Menu President ({president.name}) ===")
+        print("1. Add books to the selection")
+        print("2. Show vote results")
+        print("3. Start the selection process")
+        print("4. Quit")
+        choice = input("Choose an option: ")
 
         if choice == '1':
-            selection_number = int(input("Numéro de la sélection (2 ou 3): "))
-            book_ids = input("Entrez les ID des livres à ajouter (séparés par des virgules): ").split(',')
+            selection_number = int(input("Selection number (2 or 3): "))
+            book_ids = input("Enter the IDs of the books to add (separated by commas): ").split(',')
             book_ids = [int(book_id.strip()) for book_id in book_ids]
             book_dao.add_books_to_selection(selection_number, book_ids, None)
-            print("Livres ajoutés à la sélection.")
+            print("Books added to the selection.")
         elif choice == '2':
-            selection_number = int(input("Numéro de la sélection (2 ou 3): "))
+            selection_number = int(input("Selection number (2 or 3): "))
             results = book_dao.get_vote_results_for_president(selection_number)
             for result in results:
                 print(f"{result['title']} - {result['author']} - Votes: {result['votes_count']}")
@@ -78,49 +81,63 @@ def display_president_menu(book_dao, president):
         elif choice == '4':
             break
         else:
-            print("Choix invalide.")
+            print("Invalid choice.")
 
-def display_jury_menu(book_dao, jury):
-    """
-    Display the menu options for jury members.
 
-    Args:
-        book_dao (BookDAO): Data access object for book-related operations.
-        jury (Jury): The jury member object logged in.
-    """
+
+
+
+def display_jury_menu(book_dao, member):
     while True:
-        print(f"=== Menu Jury ({jury.name}) ===")
-        print("1. Afficher les livres d'une sélection")
-        print("2. Voter pour un livre")
-        print("3. Quitter")
-        choice = input("Choisissez une option: ")
+        print(f"=== Menu Jury ({member.name}) ===")
+        print("1. Display books from a selection")
+        print("2. Vote for a book")
+        print("3. Quit")
+        choice = input("Choose an option: ")
 
         if choice == '1':
-            selection_number = int(input("Entrez le numéro de la sélection (1, 2, 3): "))
-            books = book_dao.get_books_by_selection(selection_number)
-            if books:
-                for book in books:
-                    print(f"ID: {book['id_book']}, Title: {book['title']}, Author: {book['author']}")
-            else:
-                print("Aucun livre disponible dans cette sélection.")
+            selection_number = int(input("Enter the selection number (1, 2, 3): "))
+            display_books_for_selection(book_dao, selection_number)
+
         elif choice == '2':
-            selection_number = int(input("Entrez le numéro de la sélection (2, 3, 4): "))
-            max_votes = book_dao.get_max_votes_for_selection(selection_number)
-            current_votes = book_dao.get_current_votes_for_jury(jury.id_member, selection_number)
+            selection_number = int(input("Enter the selection number (2, 3, 4): "))
+            available_books = book_dao.get_books_by_selection(selection_number)
+            available_book_ids = [book['id_book'] for book in available_books]
 
-            votes_remaining = max_votes - (current_votes or 0)
+            print(f"Available books for selection {selection_number}: {available_book_ids}")  
+            handle_vote(book_dao, member, selection_number)
 
-            if votes_remaining <= 0:
-                print("Vous avez atteint le nombre maximum de votes pour cette sélection.")
-            else:
-                print(f"Vous pouvez encore voter pour {votes_remaining} livre(s).")
-                book_ids_input = input("Entrez les ID des livres pour voter (séparés par des virgules): ")
-                book_ids = [int(book_id.strip()) for book_id in book_ids_input.split(',')]
-                add_votes_for_selection(book_dao, jury, selection_number, book_ids)
         elif choice == '3':
             break
         else:
-            print("Choix invalide.")
+            print("Invalid choice. Please try again.")
+
+def handle_vote(book_dao, member, selection_number):
+    """
+    Handle the voting process for a jury member.
+    """
+    current_votes = book_dao.get_current_votes_for_jury(member.id_member, selection_number) or 0
+    available_books = book_dao.get_books_by_selection(selection_number)
+    available_book_ids = [book['id_book'] for book in available_books]
+
+    # Set max votes based on the selection phase
+    max_votes = {2: 4, 3: 2, 4: 1}.get(selection_number, 0)
+
+    votes_remaining = max_votes - current_votes
+
+    if votes_remaining > 0:
+        print(f"You have {votes_remaining} votes remaining for this selection.")
+        book_ids_input = input("Enter the IDs of the books to vote for (separated by commas): ")
+        book_ids = [int(book_id.strip()) for book_id in book_ids_input.split(',')]
+
+        # Validate book IDs
+        invalid_books = [book_id for book_id in book_ids if book_id not in available_book_ids]
+        if invalid_books:
+            print(f"Error: The following books are not available for this selection: {invalid_books}")
+        else:
+            add_votes_for_selection(book_dao, member, selection_number, book_ids)
+    else:
+        print("You have exhausted your votes for this selection.")
 
 def handle_member_choice(choice, book_dao):
     """
@@ -131,18 +148,19 @@ def handle_member_choice(choice, book_dao):
         book_dao (BookDAO): Data access object for book-related operations.
     """
     if choice == '1':
-        selection_number = int(input("Entrez le numéro de la sélection (1, 2, 3): "))
+        selection_number = int(input("Enter the selection number (1, 2, 3): "))
         books = book_dao.get_books_by_selection(selection_number)
         if books:
             for book in books:
-                print(f"ID: {book['id_book']}, Titre: {book['title']}, Auteur: {book['author']}")
+                print(f"ID: {book['id_book']}, Title: {book['title']}, Author: {book['author']}")
         else:
-            print("Aucun livre disponible dans cette sélection.")
+            print("No books available in this selection.")
     elif choice == '2':
         print("Goodbye!")
         exit()
     else:
-        print("Choix invalide.")
+        print("Invalid choice.")
+
 
 def main():
     """
@@ -155,11 +173,11 @@ def main():
 
     while True:
         display_menu()
-        option = input("Choisissez une option: ")
+        option = input("Choose an option: ")
 
         if option == '1':
-            name = input("Entrez votre nom: ")
-            password = input("Entrez votre mot de passe: ")
+            name = input("Enter your name: ")
+            password = input("Enter your password: ")
 
             member_data = members_dao.get_member_by_name(name)
             if member_data:
@@ -174,15 +192,16 @@ def main():
                         member = Member(member_data['name'], member_data['password'], member_data['id_member'])
                         handle_login(member, book_dao)
                     else:
-                        print("Rôle inconnu.")
+                        print("Unknown role.")
                 else:
-                    print("Mot de passe incorrect.")
+                    print("Incorrect password.")
             else:
-                print("Identifiants incorrects.")
+                print("Incorrect credentials.")
         elif option == '2':
             break
         else:
-            print("Option non valide.")
+            print("Invalid option.")
+
 
 if __name__ == "__main__":
     main()

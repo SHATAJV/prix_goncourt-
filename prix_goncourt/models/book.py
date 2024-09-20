@@ -16,7 +16,7 @@ class Book:
         price (float): The price of the book.
     """
 
-    def __init__(self, title, author, editor, summary, isbn, publication_date, pages, price):
+    def __init__(self, id_book, title, author, editor, summary, isbn, publication_date, pages, price):
         """
         Initializes a Book instance.
 
@@ -30,6 +30,7 @@ class Book:
             pages (int): The number of pages in the book.
             price (float): The price of the book.
         """
+        self.id_book= id_book
         self.title = title
         self.author = author
         self.editor = editor

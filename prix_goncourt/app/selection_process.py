@@ -1,20 +1,26 @@
 from dao import BookDAO
 
 
-def add_votes_for_selection(book_dao: BookDAO, jury, selection_id, book_ids):
-    """
-    Add votes for the given books by the jury for a particular selection.
+def add_votes_for_selection(book_dao, jury, selection_id, book_ids):
+    max_votes = 4  # Maximum de votes autorisés
 
-    Args:
-        book_dao (BookDAO): The database or service that handles book selections and votes.
-        jury: The jury member voting.
-        selection_id (int): The selection round ID (e.g., 1, 2, 3).
-        book_ids (list): A list of book IDs the jury member is voting for.
-    """
+    # Utilisez selection_id ici
+    current_votes = sum(book_dao.get_current_votes(selection_id, book_id) for book_id in book_ids)
+
+    if current_votes + len(book_ids) > max_votes:
+        print("You have reached the maximum number of votes for this selection.")
+        return
+
     for book_id in book_ids:
-        # Add a vote from the jury member for each book in the list
+        book = book_dao.get_book_by_id(book_id)
+        if book is None:
+            print(f"Book with ID {book_id} does not exist.")
+            continue
+
         book_dao.add_vote(selection_id, book_id, jury)
-    print(f"Jury member {jury['name']} voted for books: {book_ids} in selection {selection_id}.")
+        print(f"Jury member {jury.name} voted for book ID {book_id} in selection {selection_id}.")
+
+
 
 def get_votes_from_jury(jury, selection_number):
     """
@@ -41,7 +47,7 @@ def handle_selection_process(book_dao: BookDAO, jury_list):
         jury_list (list): A list of jury members participating in the selection process.
     """
     # Phase 1: Initial Book List (no jury voting, only president selection)
-    initial_books = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]  # Example IDs for 16 books
+    initial_books = list(range(1, 17))  # Example IDs for 16 books
     print("Phase 1: Initial book list preselected by the president.")
     book_dao.add_books_to_selection(1, initial_books, None)
 
