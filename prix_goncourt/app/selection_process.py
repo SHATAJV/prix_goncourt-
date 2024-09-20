@@ -1,30 +1,82 @@
+from dao import BookDAO
 
-from dao.book_dao import BookDAO
 
+def add_votes_for_selection(book_dao: BookDAO, jury, selection_id, book_ids):
+    """
+    Add votes for the given books by the jury for a particular selection.
+
+    Args:
+        book_dao (BookDAO): The database or service that handles book selections and votes.
+        jury: The jury member voting.
+        selection_id (int): The selection round ID (e.g., 1, 2, 3).
+        book_ids (list): A list of book IDs the jury member is voting for.
+    """
+    for book_id in book_ids:
+        # Add a vote from the jury member for each book in the list
+        book_dao.add_vote(selection_id, book_id, jury)
+    print(f"Jury member {jury['name']} voted for books: {book_ids} in selection {selection_id}.")
 
 def get_votes_from_jury(jury, selection_number):
-    # Implémentez la logique pour obtenir les votes du jury, par exemple, via une entrée utilisateur ou une autre source
-    return [1, 3, 8]  # Exemple de retour de fonction avec IDs des livres
+    """
+    Retrieve votes from a jury member for a specific selection.
 
-def handle_selection_process(book_dao, jury_list):
-    # Phase 1 : Ajout initial des livres à la sélection 1
-    initial_books = [...]  # IDs des livres pour la sélection initiale
-    book_dao.add_books_to_selection(1, initial_books, None)  # Pas de limitation de votes pour la sélection initiale
+    Args:
+        jury: The jury member voting.
+        selection_number (int): The selection round number for which the jury is voting.
 
-    # Phase 2 : Vote des jurys pour la sélection 2
+    Returns:
+        list: A list of book IDs that the jury member has voted for.
+    """
+    print(f"Jury {jury.name}, sélection {selection_number}.")
+    book_ids_input = input("Entrez les ID des livres pour voter (séparés par des virgules): ")
+    book_ids = [int(book_id.strip()) for book_id in book_ids_input.split(',')]
+    return book_ids
+
+def handle_selection_process(book_dao: BookDAO, jury_list):
+    """
+    Manage the entire selection process, including jury voting and president selections.
+
+    Args:
+        book_dao (BookDAO): The database or service that handles book selections and votes.
+        jury_list (list): A list of jury members participating in the selection process.
+    """
+    # Phase 1: Initial Book List (no jury voting, only president selection)
+    initial_books = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]  # Example IDs for 16 books
+    print("Phase 1: Initial book list preselected by the president.")
+    book_dao.add_books_to_selection(1, initial_books, None)
+
+    # Phase 2: Jury voting - vote for up to 4 books
+    print("Phase 2: Jury voting for up to 4 books.")
     for jury in jury_list:
-        book_ids = get_votes_from_jury(jury, 2)  # Supposer une fonction pour obtenir les votes du jury
-        book_dao.add_vote(book_ids, jury.id_member, 2)
+        book_ids = get_votes_from_jury(jury, 1)  # Jury votes for 4 books from selection 1
+        add_votes_for_selection(book_dao, jury, 1, book_ids)
 
-    # Phase 3 : Président sélectionne des livres basés sur les votes
-    top_books = book_dao.president_select_books(2, 8)
+    # The president selects the top 8 books based on the vote count
+    print("President selects 8 books with the most votes from Phase 2.")
+    top_books = book_dao.president_select_books(1, 8)  # Select top 8 books
+    book_dao.add_books_to_selection(2, [book['id_book'] for book in top_books], 1)
+
+    # Phase 3: Jury voting - vote for up to 2 books
+    print("Phase 3: Jury voting for up to 2 books from the 8 selected in Phase 2.")
+    for jury in jury_list:
+        book_ids = get_votes_from_jury(jury, 2)  # Jury votes for 2 books from selection 2
+        add_votes_for_selection(book_dao, jury, 2, book_ids)
+
+    # The president selects top books (e.g., 4) based on the votes
+    print("President selects top books from Phase 3 based on votes.")
+    top_books = book_dao.president_select_books(2, 4)  # Select top 4 books
     book_dao.add_books_to_selection(3, [book['id_book'] for book in top_books], 2)
 
-    # Phase 4 : Vote des jurys pour la sélection 3
+    # Phase 4: Jury voting - vote for 1 book
+    print("Phase 4: Jury voting for 1 book from the final selection.")
     for jury in jury_list:
-        book_ids = get_votes_from_jury(jury, 3)
-        book_dao.add_vote(book_ids, jury.id_member, 3)
+        book_ids = get_votes_from_jury(jury, 3)  # Jury votes for 1 book from selection 3
+        add_votes_for_selection(book_dao, jury, 3, book_ids)
 
-    # Phase 5 : Président sélectionne le gagnant
-    final_books = book_dao.president_select_books(3, 1)
-    print(f"Le gagnant final est le livre avec ID: {final_books[0]['id_book']}")
+    # The president selects the final winner based on the final votes
+    print("President selects the final winner.")
+    final_books = book_dao.president_select_books(3, 1)  # Select the final winning book
+    if final_books:
+        print(f"The winning book is: {final_books[0]['title']} by {final_books[0]['author']}.")
+    else:
+        print("No winner selected.")
