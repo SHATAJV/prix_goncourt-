@@ -1,4 +1,4 @@
-from dao.book_dao import BookDAO, display_books_for_selection
+from dao.book_dao import BookDAO
 from dao.members_dao import MembersDAO
 from models.jury import Jury
 from models.president import President
@@ -6,6 +6,17 @@ from models.member import Member
 from selection_process import handle_selection_process, add_votes_for_selection
 
 
+def display_books_for_selection(self, selection_number):
+    """
+    Display the list of books available for a given selection phase.
+    """
+    books = self.get_books_by_selection(selection_number)
+    if books:
+        print(f"Books available for selection phase {selection_number}:")
+        for book in books:
+            print(f"ID: {book['id_book']}, Title: {book['title']}, Author: {book['author']}")
+    else:
+        print(f"No books available for selection phase {selection_number}.")
 def display_menu():
     """
     Display the main menu options for the application.
@@ -104,7 +115,7 @@ def display_jury_menu(book_dao, member):
             available_books = book_dao.get_books_by_selection(selection_number)
             available_book_ids = [book['id_book'] for book in available_books]
 
-            print(f"Available books for selection {selection_number}: {available_book_ids}")  
+            print(f"Available books for selection {selection_number}: {available_book_ids}")
             handle_vote(book_dao, member, selection_number)
 
         elif choice == '3':
@@ -128,7 +139,7 @@ def handle_vote(book_dao, member, selection_number):
     if votes_remaining > 0:
         print(f"You have {votes_remaining} votes remaining for this selection.")
         book_ids_input = input("Enter the IDs of the books to vote for (separated by commas): ")
-        book_ids = [int(book_id.strip()) for book_id in book_ids_input.split(',')]
+        book_ids = [int(id.strip()) for id in book_ids_input.split(',')]
 
         # Validate book IDs
         invalid_books = [book_id for book_id in book_ids if book_id not in available_book_ids]
@@ -163,21 +174,16 @@ def handle_member_choice(choice, book_dao):
 
 
 def main():
-    """
-    Main entry point of the application.
-
-    Handles member login and navigates to the appropriate menu based on the member's role.
-    """
     members_dao = MembersDAO()
     book_dao = BookDAO()
 
     while True:
         display_menu()
-        option = input("Choose an option: ")
+        option = input("Choisissez une option: ")
 
         if option == '1':
-            name = input("Enter your name: ")
-            password = input("Enter your password: ")
+            name = input("Entrez votre nom: ")
+            password = input("Entrez votre mot de passe: ")
 
             member_data = members_dao.get_member_by_name(name)
             if member_data:
@@ -192,16 +198,15 @@ def main():
                         member = Member(member_data['name'], member_data['password'], member_data['id_member'])
                         handle_login(member, book_dao)
                     else:
-                        print("Unknown role.")
+                        print("Rôle inconnu.")
                 else:
-                    print("Incorrect password.")
+                    print("Mot de passe incorrect.")
             else:
-                print("Incorrect credentials.")
+                print("Identifiants incorrects.")
         elif option == '2':
             break
         else:
-            print("Invalid option.")
-
+            print("Option invalide.")
 
 if __name__ == "__main__":
     main()
