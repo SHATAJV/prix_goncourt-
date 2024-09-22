@@ -68,32 +68,28 @@ def display_president_menu(book_dao, president):
         president (President): The president object logged in.
     """
     while True:
-        print(f"=== Menu President ({president.name}) ===")
-        print("1. Add books to the selection")
-        print("2. Show vote results")
-        print("3. Start the selection process")
-        print("4. Quit")
-        choice = input("Choose an option: ")
+        print(f"=== Menu Président ({president.name}) ===")
+        print("1. Ajouter des livres à la sélection")
+        print("2. Afficher les résultats des votes")
+        print("3. Quitter")
+        choice = input("Choisissez une option : ")
 
         if choice == '1':
-            selection_number = int(input("Selection number (2 or 3): "))
-            book_ids = input("Enter the IDs of the books to add (separated by commas): ").split(',')
+            selection_number = int(input("Numéro de sélection (2, 3, 4) : "))
+            book_ids = input("Entrez les ID des livres à ajouter (séparés par des virgules) : ").split(',')
             book_ids = [int(book_id.strip()) for book_id in book_ids]
-            book_dao.add_books_to_selection(selection_number, book_ids, None)
-            print("Books added to the selection.")
+            book_dao.add_books_to_selection(selection_number, book_ids)
+            print("Livres ajoutés à la sélection.")
         elif choice == '2':
-            selection_number = int(input("Selection number (2 or 3): "))
+            selection_number = int(input("Numéro de sélection (2 ou 3 ,4) : "))
             results = book_dao.get_vote_results_for_president(selection_number)
             for result in results:
-                print(f"{result['title']} - {result['author']} - Votes: {result['votes_count']}")
+                print(f"{result['title']} - {result['author']} - Votes : {result['votes_count']}")
+
         elif choice == '3':
-            juries = book_dao.get_all_juries()
-            handle_selection_process(book_dao, juries)
-        elif choice == '4':
             break
         else:
-            print("Invalid choice.")
-
+            print("Choix invalide.")
 
 
 
