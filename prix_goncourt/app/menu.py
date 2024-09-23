@@ -86,7 +86,7 @@ def display_president_menu(book_dao, president):
             book_dao.add_books_to_selection(selection_number, book_ids)
             print("Books added to the selection.")
         elif choice == '2':
-            selection_number = int(input("Selection number (1, 2, 3,4): "))
+            selection_number = int(input("Selection number (1, 2, 3, 4): "))
             results = book_dao.get_vote_results_for_president(selection_number)
             for result in results:
                 print(f"{result['title']} - {result['author']} - Votes: {result['votes_count']}")
@@ -147,8 +147,8 @@ def handle_vote(book_dao, member, selection_number):
 
     if votes_remaining > 0:
         print(f"You have {votes_remaining} votes remaining for this selection.")
-        book_ids_input = input("Enter the IDs of the books to vote for (separated by commas): ")
-        book_ids = [int(id.strip()) for id in book_ids_input.split(',')]
+        book_ids_input = input("Enter the IDs of the books to vote for ")
+        book_ids = [int(id.strip()) for id in book_ids_input]
 
         # Validate book IDs
         invalid_books = [book_id for book_id in book_ids if book_id not in available_book_ids]
