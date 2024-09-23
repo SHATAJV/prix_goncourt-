@@ -113,7 +113,7 @@ class BookDAO:
         cursor.execute(query, (selection_number,))
         result = cursor.fetchone()
 
-        # Log for debugging
+
         if result:
             print(f"Max votes for selection {selection_number}: {result['max_votes']}")
         else:

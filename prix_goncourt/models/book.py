@@ -2,19 +2,6 @@
 
 
 class Book:
-    """
-    Represents a book with various attributes such as title, author, and publication details.
-
-    Attributes:
-        title (str): The title of the book.
-        author (str): The author of the book.
-        editor (str): The editor of the book.
-        summary (str): A brief summary of the book.
-        isbn (str): The ISBN number of the book.
-        publication_date (str): The publication date of the book.
-        pages (int): The number of pages in the book.
-        price (float): The price of the book.
-    """
 
     def __init__(self, id_book, title, author, editor, summary, isbn, publication_date, pages, price):
         """
@@ -25,7 +12,7 @@ class Book:
             author (str): The author of the book.
             editor (str): The editor of the book.
             summary (str): A brief summary of the book.
-            isbn (str): The ISBN number of the book.
+            isbn (str): The ISBN of the book.
             publication_date (str): The publication date of the book.
             pages (int): The number of pages in the book.
             price (float): The price of the book.
