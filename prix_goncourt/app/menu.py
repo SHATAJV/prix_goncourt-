@@ -86,7 +86,7 @@ def display_president_menu(book_dao, president):
             book_dao.add_books_to_selection(selection_number, book_ids)
             print("Books added to the selection.")
         elif choice == '2':
-            selection_number = int(input("Selection number (2, 3, 4): "))
+            selection_number = int(input("Selection number (1, 2, 3,4): "))
             results = book_dao.get_vote_results_for_president(selection_number)
             for result in results:
                 print(f"{result['title']} - {result['author']} - Votes: {result['votes_count']}")
@@ -112,7 +112,7 @@ def display_jury_menu(book_dao, member):
         choice = input("Choose an option: ")
 
         if choice == '1':
-            selection_number = int(input("Enter the selection number (1, 2, 3): "))
+            selection_number = int(input("Enter the selection number (2, 3, 4): "))
             display_books_for_selection(book_dao, selection_number)
         elif choice == '2':
             selection_number = int(input("Enter the selection number (2, 3, 4): "))
