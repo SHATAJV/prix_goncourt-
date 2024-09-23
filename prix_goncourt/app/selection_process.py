@@ -39,7 +39,7 @@ def add_votes_for_selection(book_dao, member, selection_number, book_ids):
         if book_id in available_book_ids:
             valid_book_ids.append(book_id)
             current_votes = book_dao.get_current_votes(selection_number, book_id)
-            print(f"Votes for book {book_id}: {current_votes}")  # Log current votes
+            print(f"Votes for book {book_id}: {current_votes}")
             total_votes += current_votes
 
             # Add the vote to the database
@@ -68,7 +68,6 @@ def handle_selection_process(book_dao, jury_list):
         add_votes_for_selection(book_dao, jury, 1, book_ids)
 
     print("The president selects 8 books with the most votes from phase 2.")
-    # Implement the president's selection here...
 
     print("Phase 3: Jury votes for up to 2 books.")
     for jury in jury_list:
@@ -76,7 +75,7 @@ def handle_selection_process(book_dao, jury_list):
         add_votes_for_selection(book_dao, jury, 2, book_ids)
 
     print("The president selects the best books from phase 3 based on the votes.")
-    # Implement the president's selection here...
+
 
     print("Phase 4: Jury votes for 1 book from the final selection.")
     for jury in jury_list:
